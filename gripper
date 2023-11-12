@@ -1,0 +1,262 @@
+import requests, argparse, os, sys, threading
+from colorama import Fore,Back,Style
+gripper_logo = f"""
+{Fore.WHITE}  ____ {Fore.RED}____  _
+{Fore.WHITE} / ___|{Fore.RED}  _ \(_)_ __  _ __   ___ _ __
+{Fore.WHITE}| |  _|{Fore.RED} |_) | | '_ \| '_ \ / _ \ '__|
+{Fore.WHITE}| |_| |{Fore.RED}  _ <| | |_) | |_) |  __/ |
+{Fore.WHITE} \__  |{Fore.RED} | \ \_| .__/| .__/ \_  | |
+{Fore.WHITE}    \ |{Fore.RED}\|  \| | |   | |      \_|\|
+{Fore.WHITE}     \|{Fore.RED}        \|    \|{Fore.RESET}
+
+Example:
+    {Fore.RED}gripper{Fore.RESET} --style
+    {Fore.RED}gripper{Fore.RESET} --requests https://example.com --batch example.php
+    {Fore.RED}gripper{Fore.RESET} --requests https://example.com --model ipripper --batch example_ip.php
+    {Fore.RED}gripper{Fore.RESET} --start-server --type LOCALHOST
+    {Fore.RED}gripper{Fore.RESET} --start-server --type ngrok
+
+Version 0.1.2
+DaM201"""
+print(f"{gripper_logo}")
+owner = "DaM201"
+version = 1.5
+description_program = f"""{Fore.RED}Gripper{Fore.RESET} is a {Fore.RED}program{Fore.RESET} that downloads script code from the web. it creates a file with the {Fore.RED}script code{Fore.RESET}. it adds a script to the file that when someone connects to your site, you will see their {Fore.RED}IP Address{Fore.RESET}. You can make your own website instead of the {Fore.RED}WEB SCRIPT{Fore.RESET}. Which means you can use {Fore.RED}Gripper{Fore.RESET} to create your own web design. Another thing {Fore.RED}Gripper{Fore.RESET} allows you to do is to run {Fore.RED}LOCALHOST WEB{Fore.RESET} and {Fore.RED}HTTPS WEB{Fore.RESET}. {Fore.RED}Gripper{Fore.RESET} allows more options. {Fore.LIGHTMAGENTA_EX}Only with Gripper. {Fore.RESET}"""
+
+parser = argparse.ArgumentParser(description=description_program)
+parser.add_argument("--style", action="store_true", help=f"is a {Fore.RED}command{Fore.RESET} that allows you to create a {Fore.RED}PHP file{Fore.RESET} and you have the option to {Fore.RED}style the PHP file{Fore.RESET} as you want using {Fore.RED}Gripper{Fore.RESET}")
+parser.add_argument("--start-server", action="store_true", help=f"allows to run the {Fore.RED}server{Fore.RESET} in the given needs for {Fore.RED}example{Fore.RESET} : {Fore.LIGHTMAGENTA_EX}LOCALHOST{Fore.RESET}")
+parser.add_argument("--requests",type=str,help=f"notify your {Fore.RED}WEB{Fore.RESET} to which you would like to {Fore.RED}perform{Fore.RESET}.")
+parser.add_argument("--batch",type=str,help=f"creates a file with your {Fore.RED}STYLE example{Fore.RESET} : {Fore.LIGHTMAGENTA_EX}--batch <FILENAME>{Fore.RESET}")
+parser.add_argument("--model",type=str,help=f"you can choose your {Fore.RED}model{Fore.RESET} to use.")
+parser.add_argument("--type",type=str,help=f"you can choose your {Fore.RED}type{Fore.RESET} to use {Fore.RED}example{Fore.RESET} : {Fore.LIGHTMAGENTA_EX}--type LOCALHOST{Fore.RESET}")
+parser.add_argument("--url", type=str,help=f"Set your {Fore.RED}URL{Fore.RESET} for {Fore.RED}example{Fore.RESET}: {Fore.LIGHTMAGENTA_EX}--start-server --type{Fore.RESET} LOCALHOST {Fore.LIGHTMAGENTA_EX}--url{Fore.RESET} example.com")
+parser.add_argument("--install",action="store_true",help=f"{Fore.RED}Installs{Fore.RESET} helper stuff for starting {Fore.RED}WEB{Fore.RESET}")
+args = parser.parse_args()
+
+def ErrorMessage(text):
+   print(f"[{Style.BRIGHT}{Fore.RED}!{Fore.RESET}{Style.RESET_ALL}] {text}{Fore.RESET}")
+def InfoMessage(text):
+   print(f"[{Style.BRIGHT}{Fore.LIGHTMAGENTA_EX}*{Fore.RESET}{Style.RESET_ALL}] {text}{Fore.RESET}")
+def SuccessfullyMessage(text):
+   print(f"[{Style.BRIGHT}{Fore.GREEN}+{Fore.RESET}{Style.RESET_ALL}] {text}{Fore.RESET}")
+def InputMessage(text):
+   Input = input(f"[{Style.BRIGHT}{Fore.BLUE}?{Fore.RESET}{Style.RESET_ALL}] {Fore.BLUE}{text} > {Fore.RESET}")
+def TryMessage(text):
+   print(f"[{Style.BRIGHT}{Fore.YELLOW}/{Fore.RESET}{Style.RESET_ALL}] {text}{Fore.RESET}")
+def exit_command():
+    sys.exit()
+if args.style:
+   if args.batch:
+      filename = str(args.batch)
+   else:
+      filename = "index.php"
+    
+   InfoMessage("Building Gripper PHP FILE")
+   open(f"{filename}","+w").close()
+   log_script = "<!DOCTYPE html>"
+   run = True
+   while run:
+    command_style = input("gripper-style> ")
+    if command_style.startswith("background "):
+       log_script_new = f"""
+<body style="background-color: {str(command_style[11:])};"></body>
+"""
+       log_script = str(log_script) + str(log_script_new)
+       SuccessfullyMessage(f"Background => {str(command_style[11:])}")
+    elif command_style=="clear":
+       os.system("cls")
+    elif command_style=="":
+       pass
+    elif command_style.startswith("title "):
+       log_script_new = f"""
+<title>{str(command_style[6:])}</title>
+"""
+       log_script = str(log_script) + str(log_script_new)
+       SuccessfullyMessage(f"Title => {str(command_style[6:])}")
+    elif command_style.startswith("h"):
+       try:
+            number_font,echo = str(command_style[1:]).split("=")
+            number_font = number_font.replace(" ","")
+            print(number_font,echo)
+            log_script_new = f"""
+<h{number_font}>{echo}</h{number_font}>"""
+            log_script = str(log_script) + str(log_script_new)
+            SuccessfullyMessage(f"ECHO => {echo} | FONT => {number_font}")
+       except:
+          ErrorMessage("Splitting")
+
+            
+          
+
+    elif command_style=="exploit":
+       InfoMessage(f"Building File => {filename}")
+       open(f"{filename}","a").write(log_script)
+       SuccessfullyMessage(f"Builded File. With Name => {filename}")
+       run = False
+    elif command_style.startswith("button "):
+       log_script_new = f"""
+<button>{str(command_style[7:])}</button>
+"""
+    elif command_style.startswith("model "):
+       if str(command_style[6:])=="ipripper":
+          log_script_new = """
+
+<?php  
+    $filename = 'ip.txt';
+    // if user from the share internet   
+    if(!empty($_SERVER['HTTP_CLIENT_IP'])) {   
+        $text = '----'.$_SERVER['HTTP_CLIENT_IP'];
+        $existingContent = file_get_contents($filename);
+        file_put_contents($filename, $existingContent . $text);
+    }   
+    //if user is from the proxy   
+    elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {   
+        $text = '----'.$_SERVER['HTTP_X_FORWARDED_FOR'];
+        $existingContent = file_get_contents($filename);
+        file_put_contents($filename, $existingContent . $text);
+
+    }   
+    //if user is from the remote address   
+    else{   
+        $text = '----'.$_SERVER['REMOTE_ADDR'];
+        $existingContent = file_get_contents($filename);
+        file_put_contents($filename, $existingContent . $text);
+    }     
+?>"""
+          log_script = str(log_script) + str(log_script_new)
+          SuccessfullyMessage(f"MODEL => {str(command_style[6:])}")
+          InfoMessage("THIS SCRIPT IS PROGRAMMED IN PHP. IF YOU HAVE ANOTHER EXAMPLE => .HTML .CSS . PLEASE RENAME YOUR FILE")
+       else:
+          ErrorMessage("Please write model")
+          
+    elif command_style=="exit":
+       run = False
+    elif command_style=="":
+       pass
+    elif command_style=="name":
+       print(f"\n{Fore.YELLOW}{filename}{Fore.RESET}\n")
+    elif command_style=="script":
+       print(f"\nScript:\n\n{Fore.YELLOW}{log_script}{Fore.RESET}\n")
+    else:
+       print(f"{Fore.RED}{Style.BRIGHT}Uknow Command => \"{command_style}\"{Fore.RESET}{Style.RESET_ALL}")
+
+if args.start_server:
+   if args.type:
+      if args.url:
+        url = str(args.url)
+        type_hosting = str(args.type)
+        if type_hosting=="LOCALHOST":
+         try:
+            InfoMessage(f"Running at => {url}@localhost:8000")
+            os.system(f"php -S localhost:8000")
+         except:
+            ErrorMessage("PHP. Please Install PHP to your Computer")
+         
+      else:
+        type_hosting = str(args.type)
+        if type_hosting=="LOCALHOST":
+         try:
+            InfoMessage("Running at => localhost:8000")
+            os.system(f"php -S localhost:8000")
+         except:
+            ErrorMessage("PHP. Please Install PHP to your Computer")
+        elif type_hosting=="NGROK":
+         try:
+            os.system(f"ngrok http 8000")
+         except:
+            ErrorMessage("NGROK. Please Install NGROK to your Computer")
+if args.requests:
+   if args.batch:
+      if args.model:
+       if args.model=="ipripper":
+        response = requests.get(str(args.requests))
+        if response.status_code==200:
+            log_script_new = """
+
+<?php  
+    $filename = 'ip.txt';
+    // if user from the share internet   
+    if(!empty($_SERVER['HTTP_CLIENT_IP'])) {   
+        $text = '----'.$_SERVER['HTTP_CLIENT_IP'];
+        $existingContent = file_get_contents($filename);
+        file_put_contents($filename, $existingContent . $text);
+    }   
+    //if user is from the proxy   
+    elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {   
+        $text = '----'.$_SERVER['HTTP_X_FORWARDED_FOR'];
+        $existingContent = file_get_contents($filename);
+        file_put_contents($filename, $existingContent . $text);
+
+    }   
+    //if user is from the remote address   
+    else{   
+        $text = '----'.$_SERVER['REMOTE_ADDR'];
+        $existingContent = file_get_contents($filename);
+        file_put_contents($filename, $existingContent . $text);
+    }     
+?>"""
+            log_script = response.text
+            log_script = str(log_script) + str(log_script_new)
+            open(f"{str(args.batch)}","a").write(log_script)
+        else:
+            ErrorMessage(f"Status Code => {response.status_code}")
+      else:
+         response = requests.get(str(args.requests))
+         if response.status_code==200:
+            open(f"{str(args.batch)}","a").write(response.text)
+         else:
+            ErrorMessage(f"Status Code => {response.status_code}")
+   if args.model:
+     if args.model=="ipripper":
+      response = requests.get(str(args.requests))
+      if response.status_code==200:
+         log_script_new = """
+
+<?php  
+    $filename = 'ip.txt';
+    // if user from the share internet   
+    if(!empty($_SERVER['HTTP_CLIENT_IP'])) {   
+        $text = '----'.$_SERVER['HTTP_CLIENT_IP'];
+        $existingContent = file_get_contents($filename);
+        file_put_contents($filename, $existingContent . $text);
+    }   
+    //if user is from the proxy   
+    elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {   
+        $text = '----'.$_SERVER['HTTP_X_FORWARDED_FOR'];
+        $existingContent = file_get_contents($filename);
+        file_put_contents($filename, $existingContent . $text);
+
+    }   
+    //if user is from the remote address   
+    else{   
+        $text = '----'.$_SERVER['REMOTE_ADDR'];
+        $existingContent = file_get_contents($filename);
+        file_put_contents($filename, $existingContent . $text);
+    }     
+?>"""
+         log_script = response.text
+         log_script = str(log_script) + str(log_script_new)
+         print(f"{Style.BRIGHT}\nScript\n\n{Fore.GREEN}{log_script}{Style.RESET_ALL}{Fore.RESET}")
+      else:
+         ErrorMessage(f"Status Code => {response.status_code}")
+   else:
+      response = requests.get(str(args.requests))
+      if response.status_code==200:
+         print(f"{Style.BRIGHT}\nScript\n\n{Fore.GREEN}{response.text}{Style.RESET_ALL}{Fore.RESET}")
+      else:
+         ErrorMessage(f"Status Code => {response.status_code}")
+if args.install:
+     try:
+        open("ip.txt","+w").close()
+        print(f"[{Fore.GREEN}OK{Fore.RESET}]")
+        SuccessfullyMessage("Installed")
+     except:
+        print(f"[{Fore.RED}ERROR{Fore.RESET}]")
+     
+    
+
+   
+        
+
+
